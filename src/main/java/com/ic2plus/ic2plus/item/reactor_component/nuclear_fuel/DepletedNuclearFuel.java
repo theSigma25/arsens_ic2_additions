@@ -14,10 +14,11 @@ import net.minecraft.world.World;
 public class DepletedNuclearFuel extends Item implements IReactorComponent {
     protected final int radiationDuration;
     protected final int radiationAmplifier;
+
     public DepletedNuclearFuel(String registryName, int radiationDuration, int radiationAmplifier) {
         super();
-        this.radiationAmplifier=radiationAmplifier;
-        this.radiationDuration=radiationDuration;
+        this.radiationAmplifier = radiationAmplifier;
+        this.radiationDuration = radiationDuration;
         this.setMaxStackSize(64);
         this.setRegistryName(registryName);
         this.setUnlocalizedName(registryName);
@@ -60,7 +61,7 @@ public class DepletedNuclearFuel extends Item implements IReactorComponent {
         if (entity instanceof EntityLivingBase) {
             EntityLivingBase entityLiving = (EntityLivingBase) entity;
             if (!ItemArmorHazmat.hasCompleteHazmat(entityLiving)) {
-                IC2Potion.radiation.applyTo(entityLiving, radiationDuration*20, radiationAmplifier);
+                IC2Potion.radiation.applyTo(entityLiving, radiationDuration * 20, radiationAmplifier);
             }
         }
     }

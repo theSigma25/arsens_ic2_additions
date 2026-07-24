@@ -6,8 +6,8 @@ import net.minecraft.item.ItemStack;
 
 import java.util.function.Supplier;
 
-public class PlutoniumFuel extends NuclearFuel{
-    public PlutoniumFuel(String registryName, int cells){
+public class PlutoniumFuel extends NuclearFuel {
+    public PlutoniumFuel(String registryName, int cells) {
         super(
                 registryName,
                 cells,
@@ -31,17 +31,19 @@ public class PlutoniumFuel extends NuclearFuel{
                 }
         );
     }
+
     @Override
     public boolean acceptUraniumPulse(ItemStack stack, IReactor reactor, ItemStack pulsingStack, int youX, int youY, int pulseX, int pulseY, boolean heatRun) {
         double multiplier = Math.exp(((double) reactor.getHeat() / reactor.getMaxHeat()));
         if (!heatRun) {
-            reactor.addOutput((float) (powerMultiplier*multiplier));
+            reactor.addOutput((float) (powerMultiplier * multiplier));
         }
         return true;
     }
+
     @Override
     protected int getFinalHeat(ItemStack stack, IReactor reactor, int x, int y, int heat) {
         double multiplier = Math.exp(((double) reactor.getHeat() / reactor.getMaxHeat()) * 3);
-        return (int) (heat*multiplier);
+        return (int) (heat * multiplier);
     }
 }

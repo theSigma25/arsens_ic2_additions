@@ -7,9 +7,10 @@ import net.minecraft.item.ItemStack;
 import java.util.Random;
 import java.util.function.Supplier;
 
-public class CaliforniumFuel extends NuclearFuel{
+public class CaliforniumFuel extends NuclearFuel {
     private static final Random random = new Random();
-    public CaliforniumFuel(String registryName, int cells){
+
+    public CaliforniumFuel(String registryName, int cells) {
         super(
                 registryName,
                 cells,
@@ -23,25 +24,27 @@ public class CaliforniumFuel extends NuclearFuel{
                     @Override
                     public ItemStack get() {
                         int amount = 0;
-                        for (int iteration = 0; iteration < cells*4; ++iteration) {
-                            if (random.nextInt(3)==0) amount++;
+                        for (int iteration = 0; iteration < cells * 4; iteration++) {
+                            if (random.nextInt(3) == 0) amount++;
                         }
                         return new ItemStack(ModRegistry.CALIFORNIUM_ASH, amount);
                     }
                 }
-                );
+        );
     }
+
     @Override
     public boolean acceptUraniumPulse(ItemStack stack, IReactor reactor, ItemStack pulsingStack, int youX, int youY, int pulseX, int pulseY, boolean heatRun) {
         double multiplier = Math.exp(((double) stack.getItemDamage() / stack.getMaxDamage()) * 4);
         if (!heatRun) {
-            reactor.addOutput((float) (powerMultiplier*multiplier));
+            reactor.addOutput((float) (powerMultiplier * multiplier));
         }
         return true;
     }
+
     @Override
     protected int getFinalHeat(ItemStack stack, IReactor reactor, int x, int y, int heat) {
         double multiplier = Math.exp(((double) stack.getItemDamage() / stack.getMaxDamage()) * 4);
-        return (int) (heat*multiplier);
+        return (int) (heat * multiplier);
     }
 }

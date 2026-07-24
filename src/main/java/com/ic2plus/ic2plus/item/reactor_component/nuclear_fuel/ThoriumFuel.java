@@ -2,6 +2,7 @@ package com.ic2plus.ic2plus.item.reactor_component.nuclear_fuel;
 
 import com.ic2plus.ic2plus.ModRegistry;
 import net.minecraft.item.ItemStack;
+
 import java.util.function.Supplier;
 
 public class ThoriumFuel extends NuclearFuel {

@@ -27,16 +27,26 @@ public abstract class NuclearFuel extends AbstractDamageableReactorComponent {
 
     public NuclearFuel(String registryName, int cells, int duration, double powerMultiplier, double heatMultiplier, double explosionMultiplier, int radiationDuration, int radiationAmplifier, Supplier<ItemStack> depletedProduct) {
         super(null, duration);
-        this.setRegistryName("ic2plus",registryName);
+        this.setRegistryName("ic2plus", registryName);
         this.setUnlocalizedName(registryName);
         this.setMaxStackSize(64);
-        this.radiationDuration=radiationDuration;
-        this.radiationAmplifier=radiationAmplifier;
+        this.radiationDuration = radiationDuration;
+        this.radiationAmplifier = radiationAmplifier;
         this.cells = cells;
         this.powerMultiplier = powerMultiplier;
         this.heatMultiplier = heatMultiplier;
         this.depletedProduct = depletedProduct;
-        this.explosionMultiplier=explosionMultiplier;
+        this.explosionMultiplier = explosionMultiplier;
+    }
+
+    protected static int checkPulseable(IReactor reactor, int x, int y, ItemStack stack, int mex, int mey, boolean heatRun) {
+        ItemStack other = reactor.getItemAt(x, y);
+        return other != null && other.getItem() instanceof IReactorComponent &&
+                ((IReactorComponent) other.getItem()).acceptUraniumPulse(other, reactor, stack, x, y, mex, mey, heatRun) ? 1 : 0;
+    }
+
+    protected static int triangularNumber(int x) {
+        return (x * x + x) / 2;
     }
 
     @Override
@@ -50,11 +60,11 @@ public abstract class NuclearFuel extends AbstractDamageableReactorComponent {
 
         int basePulses = 1 + this.cells / 2;
 
-        for (int iteration = 0; iteration < this.cells; ++iteration) {
+        for (int iteration = 0; iteration < this.cells; iteration++) {
             int pulses = basePulses;
             if (!heatRun) {
-                for (int i = 0; i < pulses; ++i) {
-                        this.acceptUraniumPulse(stack, reactor, stack, x, y, x, y, heatRun);
+                for (int i = 0; i < pulses; i++) {
+                    this.acceptUraniumPulse(stack, reactor, stack, x, y, x, y, heatRun);
                 }
                 pulses += checkPulseable(reactor, x - 1, y, stack, x, y, heatRun)
                         + checkPulseable(reactor, x + 1, y, stack, x, y, heatRun)
@@ -103,6 +113,7 @@ public abstract class NuclearFuel extends AbstractDamageableReactorComponent {
     protected int getFinalHeat(ItemStack stack, IReactor reactor, int x, int y, int heat) {
         return heat;
     }
+
     protected ItemStack getDepletedStack(ItemStack stack, IReactor reactor) {
         if (depletedProduct != null) {
             ItemStack depleted = depletedProduct.get();
@@ -111,16 +122,6 @@ public abstract class NuclearFuel extends AbstractDamageableReactorComponent {
             }
         }
         return ItemStack.EMPTY;
-    }
-
-    protected static int checkPulseable(IReactor reactor, int x, int y, ItemStack stack, int mex, int mey, boolean heatRun) {
-        ItemStack other = reactor.getItemAt(x, y);
-        return other != null && other.getItem() instanceof IReactorComponent &&
-                ((IReactorComponent) other.getItem()).acceptUraniumPulse(other, reactor, stack, x, y, mex, mey, heatRun) ? 1 : 0;
-    }
-
-    protected static int triangularNumber(int x) {
-        return (x * x + x) / 2;
     }
 
     protected void checkHeatAcceptor(IReactor reactor, int x, int y, Collection<ItemStackCoord> heatAcceptors) {
@@ -143,15 +144,17 @@ public abstract class NuclearFuel extends AbstractDamageableReactorComponent {
     public float influenceExplosion(ItemStack stack, IReactor reactor) {
         return (float) (2.0F * explosionMultiplier * this.cells);
     }
+
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slotIndex, boolean isCurrentItem) {
         if (entity instanceof EntityLivingBase) {
             EntityLivingBase entityLiving = (EntityLivingBase) entity;
             if (!ItemArmorHazmat.hasCompleteHazmat(entityLiving)) {
-                IC2Potion.radiation.applyTo(entityLiving, radiationDuration*20, radiationAmplifier);
+                IC2Potion.radiation.applyTo(entityLiving, radiationDuration * 20, radiationAmplifier);
             }
         }
     }
+
     protected static class ItemStackCoord {
         public final ItemStack stack;
         public final int x;

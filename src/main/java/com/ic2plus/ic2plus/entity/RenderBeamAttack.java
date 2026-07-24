@@ -56,7 +56,7 @@ public class RenderBeamAttack extends Render<BeamAttack> {
         );
 
         Vec3d dir = end.subtract(start).normalize();
-        Vec3d up = Math.abs(dir.y) > 0.99 ? new Vec3d(1,0,0) : new Vec3d(0,1,0);
+        Vec3d up = Math.abs(dir.y) > 0.99 ? new Vec3d(1, 0, 0) : new Vec3d(0, 1, 0);
         Vec3d right = dir.crossProduct(up).normalize();
 
         BufferBuilder b = Tessellator.getInstance().getBuffer();
@@ -77,10 +77,10 @@ public class RenderBeamAttack extends Render<BeamAttack> {
     private void drawPlane(BufferBuilder b, Vec3d s, Vec3d e, Vec3d axis, double w) {
         Vec3d o = axis.scale(w);
 
-        b.pos(s.x+o.x,s.y+o.y,s.z+o.z).tex(0,0).color(255,255,255,255).endVertex();
-        b.pos(e.x+o.x,e.y+o.y,e.z+o.z).tex(0,1).color(255,255,255,255).endVertex();
-        b.pos(e.x-o.x,e.y-o.y,e.z-o.z).tex(1,1).color(255,255,255,255).endVertex();
-        b.pos(s.x-o.x,s.y-o.y,s.z-o.z).tex(1,0).color(255,255,255,255).endVertex();
+        b.pos(s.x + o.x, s.y + o.y, s.z + o.z).tex(0, 0).color(255, 255, 255, 255).endVertex();
+        b.pos(e.x + o.x, e.y + o.y, e.z + o.z).tex(0, 1).color(255, 255, 255, 255).endVertex();
+        b.pos(e.x - o.x, e.y - o.y, e.z - o.z).tex(1, 1).color(255, 255, 255, 255).endVertex();
+        b.pos(s.x - o.x, s.y - o.y, s.z - o.z).tex(1, 0).color(255, 255, 255, 255).endVertex();
     }
 
     @Override

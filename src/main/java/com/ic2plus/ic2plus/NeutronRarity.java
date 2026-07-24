@@ -5,11 +5,12 @@ import net.minecraftforge.common.IRarity;
 
 public class NeutronRarity implements IRarity {
     @Override
-    public TextFormatting getColor(){
+    public TextFormatting getColor() {
         return TextFormatting.DARK_BLUE;
     }
+
     @Override
-    public String getName(){
+    public String getName() {
         return "Neutron";
     }
 }

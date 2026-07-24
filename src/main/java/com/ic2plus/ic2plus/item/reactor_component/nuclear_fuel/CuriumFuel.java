@@ -11,10 +11,11 @@ import java.util.function.Supplier;
 
 public class CuriumFuel extends NuclearFuel {
     private static final int[][] OFFSETS = {
-            {-1, 1},  {0, 1},  {1, 1},
-            {1, 0}, {1, -1},  {0, -1},
-            {-1, -1},  {-1, 0}
+            {-1, 1}, {0, 1}, {1, 1},
+            {1, 0}, {1, -1}, {0, -1},
+            {-1, -1}, {-1, 0}
     };
+
     public CuriumFuel(String registryName, int cells) {
         super(
                 registryName,
@@ -44,12 +45,12 @@ public class CuriumFuel extends NuclearFuel {
     public void processChamber(ItemStack stack, IReactor reactor, int x, int y, boolean heatRun) {
         if (!reactor.produceEnergy()) return;
 
-        int basePulses=cells*2-1;
+        int basePulses = cells * 2 - 1;
 
-        for (int iteration = 0; iteration < this.cells; ++iteration) {
+        for (int iteration = 0; iteration < this.cells; iteration++) {
             int pulses = basePulses;
             if (!heatRun) {
-                for (int i = 0; i < pulses; ++i) {
+                for (int i = 0; i < pulses; i++) {
                     this.acceptUraniumPulse(stack, reactor, stack, x, y, x, y, heatRun);
                 }
                 for (int[] offset : OFFSETS) {

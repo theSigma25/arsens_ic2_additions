@@ -1,11 +1,6 @@
 package com.ic2plus.ic2plus.entity;
 
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.culling.ICamera;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -22,6 +17,7 @@ public class RenderNeutronStar extends Render<NeutronStar> {
     public RenderNeutronStar(RenderManager manager) {
         super(manager);
     }
+
     @Override
     public boolean shouldRender(NeutronStar entity, net.minecraft.client.renderer.culling.ICamera camera, double camX, double camY, double camZ) {
         return true;
@@ -32,7 +28,7 @@ public class RenderNeutronStar extends Render<NeutronStar> {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, z);
 
-        float renderTicks = entity.ticksExisted +   partialTicks;
+        float renderTicks = entity.ticksExisted + partialTicks;
         float interpolatedYaw = (renderTicks * 0.1F) % 360.0F;
         float interpolatedPitch = (renderTicks * 0.1F) % 360.0F;
         float radius = entity.getRadius();
@@ -60,7 +56,7 @@ public class RenderNeutronStar extends Render<NeutronStar> {
         GlStateManager.color(10F, 10F, 10F, 1F);
 
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        drawSphere(buffer, 5.0F*entity.getRadius(), 32, 32);
+        drawSphere(buffer, 5.0F * entity.getRadius(), 32, 32);
         tess.draw();
 
         GlStateManager.enableBlend();
@@ -77,12 +73,12 @@ public class RenderNeutronStar extends Render<NeutronStar> {
         GlStateManager.color(0.45F, 0.8F, 1F, 0.5F);
 
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-        drawSphereNoTex(buffer, 6.0F*entity.getRadius(), 32, 32);
+        drawSphereNoTex(buffer, 6.0F * entity.getRadius(), 32, 32);
         tess.draw();
 
 
-        renderBeams(entity, partialTicks, 32, 6.0F*entity.getRadius(), 20.0F*entity.getRadius(), 12.0F, 1F,false);
-        renderBeams(entity, partialTicks, 6, 12.0F*entity.getRadius(), 120.0F*entity.getRadius(), 2.0F, 0.5F,true);
+        renderBeams(entity, partialTicks, 32, 6.0F * entity.getRadius(), 20.0F * entity.getRadius(), 12.0F, 1F, false);
+        renderBeams(entity, partialTicks, 6, 12.0F * entity.getRadius(), 120.0F * entity.getRadius(), 2.0F, 0.5F, true);
 
 
         GlStateManager.disableBlend();
@@ -123,7 +119,7 @@ public class RenderNeutronStar extends Render<NeutronStar> {
 
         if (directional) {
             for (int dir : new int[]{1, -1}) {
-                for (int i = 0; i < rayCount; ++i) {
+                for (int i = 0; i < rayCount; i++) {
                     float randomYaw = rand.nextFloat() * 360.0F;
                     float randomPitch = (rand.nextFloat() - 0.5F) * offsetAngle * 2.0F;
                     float randomRoll = (rand.nextFloat() - 0.5F) * offsetAngle * 2.0F;
@@ -145,7 +141,7 @@ public class RenderNeutronStar extends Render<NeutronStar> {
                 }
             }
         } else {
-            for (int i = 0; i < rayCount; ++i) {
+            for (int i = 0; i < rayCount; i++) {
                 GlStateManager.pushMatrix();
 
 
@@ -184,10 +180,10 @@ public class RenderNeutronStar extends Render<NeutronStar> {
         buffer.pos(0.0D, 0.0D, 0.0D).color(220, 240, 255, 255).endVertex();
 
 
-        buffer.pos(-0.866D * currentWidth, (double) currentLength, -0.5D * currentWidth).color(0, 150, 255, 0).endVertex();
-        buffer.pos(0.866D * currentWidth, (double) currentLength, -0.5D * currentWidth).color(0, 150, 255, 0).endVertex();
-        buffer.pos(0.0D, (double) currentLength, 1.0D * currentWidth).color(0, 150, 255, 0).endVertex();
-        buffer.pos(-0.866D * currentWidth, (double) currentLength, -0.5D * currentWidth).color(0, 150, 255, 0).endVertex();
+        buffer.pos(-0.866D * currentWidth, currentLength, -0.5D * currentWidth).color(0, 150, 255, 0).endVertex();
+        buffer.pos(0.866D * currentWidth, currentLength, -0.5D * currentWidth).color(0, 150, 255, 0).endVertex();
+        buffer.pos(0.0D, currentLength, 1.0D * currentWidth).color(0, 150, 255, 0).endVertex();
+        buffer.pos(-0.866D * currentWidth, currentLength, -0.5D * currentWidth).color(0, 150, 255, 0).endVertex();
 
         tessellator.draw();
     }
@@ -197,11 +193,11 @@ public class RenderNeutronStar extends Render<NeutronStar> {
 
         for (int r = 0; r < rings; r++) {
             float lat0 = pi * (-0.5f + (float) r / rings);
-            float z0  = (float) Math.sin(lat0);
+            float z0 = (float) Math.sin(lat0);
             float zr0 = (float) Math.cos(lat0);
 
             float lat1 = pi * (-0.5f + (float) (r + 1) / rings);
-            float z1  = (float) Math.sin(lat1);
+            float z1 = (float) Math.sin(lat1);
             float zr1 = (float) Math.cos(lat1);
 
             float v0 = (float) r / rings;
@@ -228,25 +224,25 @@ public class RenderNeutronStar extends Render<NeutronStar> {
     }
 
     private void drawSphereNoTex(BufferBuilder b, float radius, int rings, int sectors) {
-        float pi = (float)Math.PI;
+        float pi = (float) Math.PI;
 
         for (int r = 0; r < rings; r++) {
-            float lat0 = pi * (-0.5f + (float)r / rings);
-            float z0 = (float)Math.sin(lat0);
-            float zr0 = (float)Math.cos(lat0);
+            float lat0 = pi * (-0.5f + (float) r / rings);
+            float z0 = (float) Math.sin(lat0);
+            float zr0 = (float) Math.cos(lat0);
 
-            float lat1 = pi * (-0.5f + (float)(r + 1) / rings);
-            float z1 = (float)Math.sin(lat1);
-            float zr1 = (float)Math.cos(lat1);
+            float lat1 = pi * (-0.5f + (float) (r + 1) / rings);
+            float z1 = (float) Math.sin(lat1);
+            float zr1 = (float) Math.cos(lat1);
 
             for (int s = 0; s < sectors; s++) {
-                float lng0 = 2 * pi * (float)s / sectors;
-                float x0 = (float)Math.cos(lng0);
-                float y0 = (float)Math.sin(lng0);
+                float lng0 = 2 * pi * (float) s / sectors;
+                float x0 = (float) Math.cos(lng0);
+                float y0 = (float) Math.sin(lng0);
 
-                float lng1 = 2 * pi * (float)(s + 1) / sectors;
-                float x1 = (float)Math.cos(lng1);
-                float y1 = (float)Math.sin(lng1);
+                float lng1 = 2 * pi * (float) (s + 1) / sectors;
+                float x1 = (float) Math.cos(lng1);
+                float y1 = (float) Math.sin(lng1);
 
                 b.pos(radius * x0 * zr0, radius * z0, radius * y0 * zr0).endVertex();
                 b.pos(radius * x0 * zr1, radius * z1, radius * y0 * zr1).endVertex();

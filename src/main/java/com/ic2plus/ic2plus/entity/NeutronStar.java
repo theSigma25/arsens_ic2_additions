@@ -4,15 +4,12 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.effect.EntityLightningBolt;
-import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -22,12 +19,13 @@ import java.util.Set;
 import java.util.UUID;
 
 public class NeutronStar extends Entity {
-    private float radius = 0.01F;
-    private float mass = 0.01F;
-    private float temperature= 1.0F;
-    private float electricField= 1.0F;
-    private float magneticField=1.0F;
-    private float rotationSpeed=0.01F;
+    private final float radius = 0.01F;
+    private final float mass = 0.01F;
+    private final float temperature = 1.0F;
+    private final float electricField = 1.0F;
+    private final float magneticField = 1.0F;
+    private final float rotationSpeed = 0.01F;
+    private UUID ownerUUID;
 
     public NeutronStar(World world) {
         super(world);
@@ -39,10 +37,12 @@ public class NeutronStar extends Entity {
         ));
         setSize(radius * 10, radius * 10);
     }
+
     public NeutronStar(World world, double x, double y, double z) {
         this(world);
         this.setPosition(x, y, z);
     }
+
     @Override
     public void onUpdate() {
         super.onUpdate();
@@ -64,24 +64,26 @@ public class NeutronStar extends Entity {
             jetDestroy();
         }
     }
+
     private void damageEntities() {
-        for(Entity entity : world.getEntitiesWithinAABB(Entity.class, getEntityBoundingBox())) {
-            if (entity == this || (ownerUUID != null && entity.getUniqueID().equals(ownerUUID))) continue;
+        for (Entity entity : world.getEntitiesWithinAABB(Entity.class, getEntityBoundingBox())) {
+            if (entity == this || (entity.getUniqueID().equals(ownerUUID))) continue;
             entity.attackEntityFrom(
                     DamageSource.CACTUS,
-                    100*mass
+                    100 * mass
             );
-            if (!(entity instanceof EntityLivingBase)){
+            if (!(entity instanceof EntityLivingBase)) {
                 entity.setDead();
             }
         }
     }
-    private void pullEntities(){
+
+    private void pullEntities() {
         AxisAlignedBB box = getEntityBoundingBox().grow(128);
 
-        for(Entity entity : world.getEntitiesWithinAABB(Entity.class, box)){
+        for (Entity entity : world.getEntitiesWithinAABB(Entity.class, box)) {
 
-            if(entity == this || (entity instanceof EntityPlayer && ((EntityPlayer) entity).isCreative()) || (ownerUUID != null && entity.getUniqueID().equals(ownerUUID)))
+            if (entity == this || (entity instanceof EntityPlayer && ((EntityPlayer) entity).isCreative()) || (entity.getUniqueID().equals(ownerUUID)))
                 continue;
 
 
@@ -91,10 +93,10 @@ public class NeutronStar extends Entity {
             double distance = dir.lengthVector();
 
             dir = dir.normalize();
-            double force = Math.min(5 * mass  / distance ,2 * mass);
+            double force = Math.min(5 * mass / distance, 2 * mass);
             Vec3d tangent = new Vec3d(-dir.z, 0, dir.x);
-            double k = 0.1 + (0.9 / (1.0 + Math.exp(0.5 * (distance - (50.0*rotationSpeed)))));
-            double swirl = Math.min(4.0*rotationSpeed/distance*k, 0.15*rotationSpeed);
+            double k = 0.1 + (0.9 / (1.0 + Math.exp(0.5 * (distance - (50.0 * rotationSpeed)))));
+            double swirl = Math.min(4.0 * rotationSpeed / distance * k, 0.15 * rotationSpeed);
 
             entity.motionX += dir.x * force + tangent.x * swirl;
             entity.motionY += dir.y * force;
@@ -103,9 +105,10 @@ public class NeutronStar extends Entity {
             entity.velocityChanged = true;
         }
     }
-    private void destroyBlocks(){
+
+    private void destroyBlocks() {
         if (world.getTotalWorldTime() % 20 != 0) return;
-        int size= (int) (50*mass);
+        int size = (int) (50 * mass);
         for (int x = -size; x <= size; x++) {
             for (int y = -size; y <= size; y++) {
                 for (int z = -size; z <= size; z++) {
@@ -124,36 +127,37 @@ public class NeutronStar extends Entity {
                             pos.getY(),
                             pos.getZ()
                     );
-                    if (distance < 25*mass){
-                        world.destroyBlock(pos,false);
-                    }else if(distance < 50*mass && world.getBlockState(pos).getBlock().getExplosionResistance(null)<7 && rand.nextDouble()<0.1){
-                        world.destroyBlock(pos,false);
+                    if (distance < 25 * mass) {
+                        world.destroyBlock(pos, false);
+                    } else if (distance < 50 * mass && world.getBlockState(pos).getBlock().getExplosionResistance(null) < 7 && rand.nextDouble() < 0.1) {
+                        world.destroyBlock(pos, false);
                     }
                 }
             }
         }
     }
 
-    private void createLightning(){
-        if(world.getTotalWorldTime()%5 != 0) return;
-        if  (rand.nextDouble()>0.1*this.electricField) return;
-        int x = (int)this.posX + rand.nextInt(257)-128;
-        int z = (int)this.posZ + rand.nextInt(257)-128;
+    private void createLightning() {
+        if (world.getTotalWorldTime() % 5 != 0) return;
+        if (rand.nextDouble() > 0.1 * this.electricField) return;
+        int x = (int) this.posX + rand.nextInt(257) - 128;
+        int z = (int) this.posZ + rand.nextInt(257) - 128;
         BlockPos pos = world.getHeight(new BlockPos(x, 0, z));
         world.addWeatherEffect(
-            new EntityLightningBolt(
-                    world,
-                    pos.getX(), pos.getY(), pos.getZ(),
-                    false
-            )
+                new EntityLightningBolt(
+                        world,
+                        pos.getX(), pos.getY(), pos.getZ(),
+                        false
+                )
         );
-        world.createExplosion(null, pos.getX(),pos.getY(),pos.getZ(),this.electricField*5,true);
+        world.createExplosion(null, pos.getX(), pos.getY(), pos.getZ(), this.electricField * 5, true);
     }
+
     private void jetDestroy() {
         if (world.isRemote || ticksExisted % 5 != 0 || this.ticksExisted < 40) return;
 
-        double radius = 5.0*this.radius;
-        double rayLength = 120.0*this.radius;
+        double radius = 5.0 * this.radius;
+        double rayLength = 120.0 * this.radius;
 
         Vec3d start = new Vec3d(posX, posY, posZ);
 
@@ -205,40 +209,47 @@ public class NeutronStar extends Entity {
             }
         }
     }
-    private UUID ownerUUID;
 
     public void setOwner(EntityPlayer player) {
         if (player != null) {
             this.ownerUUID = player.getUniqueID();
         }
     }
+
     @Override
     public int getBrightnessForRender() {
         return 15728880;
     }
+
     @Override
     public float getBrightness() {
         return 1.0F;
     }
 
     @Override
-    protected void entityInit() {}
+    protected void entityInit() {
+    }
 
     public float getRadius() {
         return radius;
     }
+
     public float getTemperature() {
         return temperature;
     }
+
     public float getElectricField() {
         return electricField;
     }
+
     public float getMagneticField() {
         return magneticField;
     }
+
     public float getMass() {
         return mass;
     }
+
     public float getRotationSpeed() {
         return rotationSpeed;
     }
@@ -248,11 +259,13 @@ public class NeutronStar extends Entity {
     public boolean isInRangeToRenderDist(double distance) {
         return true;
     }
+
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
         return this.getEntityBoundingBox().grow(128);
     }
+
     @Override
     @SideOnly(Side.CLIENT)
     public boolean isInRangeToRender3d(double x, double y, double z) {
@@ -261,10 +274,12 @@ public class NeutronStar extends Entity {
 
 
     @Override
-    protected void readEntityFromNBT(NBTTagCompound nbt) {}
+    protected void readEntityFromNBT(NBTTagCompound nbt) {
+    }
 
     @Override
-    protected void writeEntityToNBT(NBTTagCompound nbt) {}
+    protected void writeEntityToNBT(NBTTagCompound nbt) {
+    }
 
     @Override
     public boolean canBeCollidedWith() {

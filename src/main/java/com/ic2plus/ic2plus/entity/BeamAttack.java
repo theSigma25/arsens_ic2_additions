@@ -1,8 +1,6 @@
 package com.ic2plus.ic2plus.entity;
 
 import com.ic2plus.ic2plus.ModRegistry;
-import com.ic2plus.ic2plus.block.StrangeQuarkBlock;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -50,7 +48,7 @@ public class BeamAttack extends Entity {
         this.range = range;
         this.damage = damage;
         this.explosionPower = explosionPower;
-        this.type=type;
+        this.type = type;
 
         this.setShooter(shooter);
         this.setTexturePath(texturePath);
@@ -127,7 +125,7 @@ public class BeamAttack extends Entity {
         }
 
         switch (type) {
-            case(0):
+            case (0):
                 if (this.explosionPower > 0 && start.squareDistanceTo(end) < (this.range * this.range) - 1) {
                     Explosion explosion = new Explosion(world, shooter, end.x, end.y, end.z, explosionPower, false, true);
                     explosion.doExplosionA();
@@ -205,21 +203,15 @@ public class BeamAttack extends Entity {
         this.lifetime = 3;
     }
 
-    // РАБОТА С DATA MANAGER (СИНХРОНИЗАЦИЯ)
-    public void setShooter(EntityLivingBase shooter) {
-        this.dataManager.set(SHOOTER_ID, shooter.getEntityId());
-    }
-
     public EntityLivingBase getShooter() {
         int id = this.dataManager.get(SHOOTER_ID);
         Entity entity = this.world.getEntityByID(id);
         return entity instanceof EntityLivingBase ? (EntityLivingBase) entity : null;
     }
 
-    public void setTarget(Vec3d target) {
-        this.dataManager.set(TARGET_X, (float) target.x);
-        this.dataManager.set(TARGET_Y, (float) target.y);
-        this.dataManager.set(TARGET_Z, (float) target.z);
+    // РАБОТА С DATA MANAGER (СИНХРОНИЗАЦИЯ)
+    public void setShooter(EntityLivingBase shooter) {
+        this.dataManager.set(SHOOTER_ID, shooter.getEntityId());
     }
 
     public Vec3d getTarget() {
@@ -229,6 +221,13 @@ public class BeamAttack extends Entity {
                 this.dataManager.get(TARGET_Z)
         );
     }
+
+    public void setTarget(Vec3d target) {
+        this.dataManager.set(TARGET_X, (float) target.x);
+        this.dataManager.set(TARGET_Y, (float) target.y);
+        this.dataManager.set(TARGET_Z, (float) target.z);
+    }
+
     @Override
     @net.minecraftforge.fml.relauncher.SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
     public boolean isInRangeToRenderDist(double distance) {
@@ -262,14 +261,19 @@ public class BeamAttack extends Entity {
         return null;
     }
 
-    public void setTexturePath(String path) {
-        this.dataManager.set(TEXTURE_PATH, path);
-    }
-
     public String getTexturePath() {
         return this.dataManager.get(TEXTURE_PATH);
     }
 
-    @Override protected void readEntityFromNBT(NBTTagCompound compound) {}
-    @Override protected void writeEntityToNBT(NBTTagCompound compound) {}
+    public void setTexturePath(String path) {
+        this.dataManager.set(TEXTURE_PATH, path);
+    }
+
+    @Override
+    protected void readEntityFromNBT(NBTTagCompound compound) {
+    }
+
+    @Override
+    protected void writeEntityToNBT(NBTTagCompound compound) {
+    }
 }

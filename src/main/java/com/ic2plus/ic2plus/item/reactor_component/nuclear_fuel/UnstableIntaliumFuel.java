@@ -1,6 +1,5 @@
 package com.ic2plus.ic2plus.item.reactor_component.nuclear_fuel;
 
-import com.ic2plus.ic2plus.ModRegistry;
 import ic2.api.reactor.IReactor;
 import ic2.api.reactor.IReactorComponent;
 import ic2.core.IC2Potion;
@@ -20,13 +19,14 @@ import java.util.Queue;
 
 import static com.ic2plus.ic2plus.ModRegistry.NEUTRON_PASTE;
 
-public class    UnstableIntaliumFuel extends NuclearFuel {
+public class UnstableIntaliumFuel extends NuclearFuel {
     private static final int[][] OFFSETS = {
-            {-2, 1},  {-2, 0},  {-2, -1},
-            {-1, -2}, {0, -2},  {1, -2},
-            {2, -1},  {2, 0},   {2, 1},
-            {1, 2},   {0, 2},   {-1, 2}
+            {-2, 1}, {-2, 0}, {-2, -1},
+            {-1, -2}, {0, -2}, {1, -2},
+            {2, -1}, {2, 0}, {2, 1},
+            {1, 2}, {0, 2}, {-1, 2}
     };
+
     public UnstableIntaliumFuel(String registryName, int cells) {
         super(
                 registryName,
@@ -81,23 +81,25 @@ public class    UnstableIntaliumFuel extends NuclearFuel {
                 reactor.explode();
                 World world = reactor.getWorldObj();
                 BlockPos position = reactor.getPosition();
-                world.spawnEntity(new EntityItem(world, position.getX()+0.5, position.getY()+0.5, position.getZ()+0.5, new ItemStack(NEUTRON_PASTE)));
+                world.spawnEntity(new EntityItem(world, position.getX() + 0.5, position.getY() + 0.5, position.getZ() + 0.5, new ItemStack(NEUTRON_PASTE)));
             } else {
                 this.applyCustomDamage(stack, 1, null);
             }
         }
     }
+
     @Override
     protected int getFinalHeat(ItemStack stack, IReactor reactor, int x, int y, int heat) {
-        double multiplier = Math.exp(((double) stack.getItemDamage()/stack.getMaxDamage())*7);
-        return (int) (heat*multiplier);
+        double multiplier = Math.exp(((double) stack.getItemDamage() / stack.getMaxDamage()) * 7);
+        return (int) (heat * multiplier);
     }
+
     @Override
     public boolean acceptUraniumPulse(ItemStack stack, IReactor reactor, ItemStack pulsingStack, int youX, int youY, int pulseX, int pulseY, boolean heatRun) {
-        double multiplier = Math.exp((double) stack.getItemDamage()/stack.getMaxDamage()*7);
+        double multiplier = Math.exp((double) stack.getItemDamage() / stack.getMaxDamage() * 7);
         if (youX == pulseX && youY == pulseY) {
             if (!heatRun) {
-                reactor.addOutput((float) (powerMultiplier*multiplier));
+                reactor.addOutput((float) (powerMultiplier * multiplier));
             }
             return true;
         }
@@ -114,17 +116,18 @@ public class    UnstableIntaliumFuel extends NuclearFuel {
             return false;
         }
         if (!heatRun) {
-            reactor.addOutput((float) (powerMultiplier*multiplier));
+            reactor.addOutput((float) (powerMultiplier * multiplier));
         }
         return true;
     }
+
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slotIndex, boolean isCurrentItem) {
         if (entity instanceof EntityLivingBase) {
             EntityLivingBase entityLiving = (EntityLivingBase) entity;
             if (!ItemArmorHazmat.hasCompleteHazmat(entityLiving)) {
-                IC2Potion.radiation.applyTo(entityLiving, radiationDuration*20, radiationAmplifier);
-                entityLiving.addPotionEffect(new PotionEffect(MobEffects.WITHER, 6000,4));
+                IC2Potion.radiation.applyTo(entityLiving, radiationDuration * 20, radiationAmplifier);
+                entityLiving.addPotionEffect(new PotionEffect(MobEffects.WITHER, 6000, 4));
                 entityLiving.attackEntityFrom(DamageSource.WITHER, 100);
             }
         }

@@ -1,5 +1,7 @@
 {
   "variants": {
-    "normal": { "model": "ic2plus:ametrine_ore" }
+    "normal": {
+      "model": "ic2plus:ametrine_ore"
+    }
   }
 }
