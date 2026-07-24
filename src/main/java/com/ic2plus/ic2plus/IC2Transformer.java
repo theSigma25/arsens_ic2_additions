@@ -1,4 +1,5 @@
 package com.ic2plus.ic2plus;
+
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;

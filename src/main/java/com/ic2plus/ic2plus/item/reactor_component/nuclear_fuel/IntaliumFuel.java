@@ -16,13 +16,14 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.function.Supplier;
 
-public class    IntaliumFuel extends NuclearFuel {
+public class IntaliumFuel extends NuclearFuel {
     private static final int[][] OFFSETS = {
-            {-2, 1},  {-2, 0},  {-2, -1},
-            {-1, -2}, {0, -2},  {1, -2},
-            {2, -1},  {2, 0},   {2, 1},
-            {1, 2},   {0, 2},   {-1, 2}
+            {-2, 1}, {-2, 0}, {-2, -1},
+            {-1, -2}, {0, -2}, {1, -2},
+            {2, -1}, {2, 0}, {2, 1},
+            {1, 2}, {0, 2}, {-1, 2}
     };
+
     public IntaliumFuel(String registryName, int cells) {
         super(
                 registryName,
@@ -52,10 +53,10 @@ public class    IntaliumFuel extends NuclearFuel {
 
         int basePulses = this.cells;
 
-        for (int iteration = 0; iteration < this.cells; ++iteration) {
+        for (int iteration = 0; iteration < this.cells; iteration++) {
             int pulses = basePulses;
             if (!heatRun) {
-                for (int i = 0; i < pulses; ++i) {
+                for (int i = 0; i < pulses; i++) {
                     this.acceptUraniumPulse(stack, reactor, stack, x, y, x, y, heatRun);
                 }
                 for (int[] offset : OFFSETS) {
@@ -93,6 +94,7 @@ public class    IntaliumFuel extends NuclearFuel {
             }
         }
     }
+
     @Override
     public boolean acceptUraniumPulse(ItemStack stack, IReactor reactor, ItemStack pulsingStack, int youX, int youY, int pulseX, int pulseY, boolean heatRun) {
         if (youX == pulseX && youY == pulseY) {
@@ -118,13 +120,14 @@ public class    IntaliumFuel extends NuclearFuel {
         }
         return true;
     }
+
     @Override
     public void onUpdate(ItemStack stack, World world, Entity entity, int slotIndex, boolean isCurrentItem) {
         if (entity instanceof EntityLivingBase) {
             EntityLivingBase entityLiving = (EntityLivingBase) entity;
             if (!ItemArmorHazmat.hasCompleteHazmat(entityLiving)) {
-                IC2Potion.radiation.applyTo(entityLiving, radiationDuration*20, radiationAmplifier);
-                entityLiving.addPotionEffect(new PotionEffect(MobEffects.WITHER, 400,4));
+                IC2Potion.radiation.applyTo(entityLiving, radiationDuration * 20, radiationAmplifier);
+                entityLiving.addPotionEffect(new PotionEffect(MobEffects.WITHER, 400, 4));
             }
         }
     }

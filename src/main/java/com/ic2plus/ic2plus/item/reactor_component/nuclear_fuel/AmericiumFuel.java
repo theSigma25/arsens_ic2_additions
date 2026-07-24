@@ -9,8 +9,8 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.function.Supplier;
 
-public class AmericiumFuel extends NuclearFuel{
-    public AmericiumFuel(String registryName, int cells){
+public class AmericiumFuel extends NuclearFuel {
+    public AmericiumFuel(String registryName, int cells) {
         super(
                 registryName,
                 cells,
@@ -34,12 +34,13 @@ public class AmericiumFuel extends NuclearFuel{
                 }
         );
     }
+
     public void processChamber(ItemStack stack, IReactor reactor, int x, int y, boolean heatRun) {
         if (!reactor.produceEnergy()) return;
 
         int basePulses = 0;
 
-        for (int iteration = 0; iteration < this.cells; ++iteration) {
+        for (int iteration = 0; iteration < this.cells; iteration++) {
             int pulses = basePulses;
             if (!heatRun) {
                 pulses += checkPulseable(reactor, x - 1, y, stack, x, y, heatRun)
@@ -77,6 +78,7 @@ public class AmericiumFuel extends NuclearFuel{
             }
         }
     }
+
     @Override
     public boolean acceptUraniumPulse(ItemStack stack, IReactor reactor, ItemStack pulsingStack, int youX, int youY, int pulseX, int pulseY, boolean heatRun) {
         if (!heatRun) {
@@ -89,8 +91,9 @@ public class AmericiumFuel extends NuclearFuel{
         }
         return true;
     }
+
     @Override
     public double getDurabilityForDisplay(ItemStack stack) {
-        return 1.0 - (double)getCustomDamage(stack) / getMaxCustomDamage(stack);
+        return 1.0 - (double) getCustomDamage(stack) / getMaxCustomDamage(stack);
     }
 }

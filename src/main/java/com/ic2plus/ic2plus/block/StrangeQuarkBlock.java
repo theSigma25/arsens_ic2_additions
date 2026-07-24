@@ -47,7 +47,6 @@ public class StrangeQuarkBlock extends Block {
             }
         }
         world.setBlockToAir(pos);
-        return;
     }
 
 

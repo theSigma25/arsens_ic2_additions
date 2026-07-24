@@ -31,7 +31,7 @@ public class ModRecipes {
         NBTTagCompound water1000 = new NBTTagCompound();
         water1000.setInteger("amount", 1000);
         Recipes.oreWashing.addRecipe(
-                inputFactory.forStack(new ItemStack(ModRegistry.THORIUM_DUST)),water1000, false,
+                inputFactory.forStack(new ItemStack(ModRegistry.THORIUM_DUST)), water1000, false,
                 new ItemStack[]{
                         new ItemStack(ModRegistry.WASHED_THORIUM_DUST),
                         new ItemStack(

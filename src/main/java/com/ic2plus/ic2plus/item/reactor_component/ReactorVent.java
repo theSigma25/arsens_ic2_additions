@@ -15,7 +15,7 @@ public class ReactorVent extends ItemReactorHeatStorage {
 
     public ReactorVent(String registryName, int heatStorage, int selfvent, int reactorvent) {
         super(null, heatStorage);
-        this.setRegistryName("ic2plus",registryName);
+        this.setRegistryName("ic2plus", registryName);
         this.setUnlocalizedName(registryName);
         this.setMaxStackSize(64);
         this.selfVent = selfvent;

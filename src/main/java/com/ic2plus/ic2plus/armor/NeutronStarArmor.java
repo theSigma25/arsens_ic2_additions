@@ -1,4 +1,3 @@
-
 package com.ic2plus.ic2plus.armor;
 
 import com.ic2plus.ic2plus.NeutronRarity;
@@ -13,14 +12,9 @@ import ic2.core.init.Localization;
 import ic2.core.init.MainConfig;
 import ic2.core.item.ItemTinCan;
 import ic2.core.item.armor.jetpack.IBoostingJetpack;
-
 import ic2.core.ref.ItemName;
 import ic2.core.util.ConfigUtil;
 import ic2.core.util.StackUtil;
-import java.util.IdentityHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
@@ -47,14 +41,19 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack, IHazmatLike, IItemHudProvider {
-    private BeamAttack beam;;
-    protected static final Map<Potion, Integer> potionRemovalCost = new IdentityHashMap<>();
-    private float jumpCharge;
-    private String armorName="neutron";
+import java.util.IdentityHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-    public NeutronStarArmor(String registryName,EntityEquipmentSlot armorType) {
-        super(registryName, "neutron_star_armor", armorType, (double)1.0E12F, (double)1.2E5F, 4);
+public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack, IHazmatLike, IItemHudProvider {
+    protected static final Map<Potion, Integer> potionRemovalCost = new IdentityHashMap<>();
+    private final String armorName = "neutron";
+    private BeamAttack beam;
+    private float jumpCharge;
+
+    public NeutronStarArmor(String registryName, EntityEquipmentSlot armorType) {
+        super(registryName, "neutron_star_armor", armorType, 1.0E12F, 1.2E5F, 4);
         if (armorType == EntityEquipmentSlot.FEET) {
             MinecraftForge.EVENT_BUS.register(this);
         }
@@ -93,14 +92,14 @@ public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack,
     @Override
     public ISpecialArmor.ArmorProperties getProperties(EntityLivingBase entity, ItemStack armor, DamageSource source, double damage, int slot) {
         int energyPerDamage = this.getEnergyPerDamage();
-        int damageLimit = ElectricItem.manager.getCharge(armor)>1000000 ? Integer.MAX_VALUE : 100;
+        int damageLimit = ElectricItem.manager.getCharge(armor) > 1000000 ? Integer.MAX_VALUE : 100;
         if (energyPerDamage > 0) {
-            damageLimit = (int)Math.min((double)damageLimit, ElectricItem.manager.getCharge(armor) / (double)energyPerDamage);
+            damageLimit = (int) Math.min((double) damageLimit, ElectricItem.manager.getCharge(armor) / (double) energyPerDamage);
         }
 
         if (source == DamageSource.FALL) {
             if (this.armorType == EntityEquipmentSlot.FEET) {
-                return new ISpecialArmor.ArmorProperties(10, (double)1.0F, damageLimit);
+                return new ISpecialArmor.ArmorProperties(10, 1.0F, damageLimit);
             }
 
             if (this.armorType == EntityEquipmentSlot.LEGS) {
@@ -117,11 +116,11 @@ public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack,
     )
     public void onEntityLivingFallEvent(LivingFallEvent event) {
         if (IC2.platform.isSimulating() && event.getEntity() instanceof EntityLivingBase) {
-            EntityLivingBase entity = (EntityLivingBase)event.getEntity();
+            EntityLivingBase entity = (EntityLivingBase) event.getEntity();
             ItemStack armor = entity.getItemStackFromSlot(EntityEquipmentSlot.FEET);
             if (armor != null && armor.getItem() == this) {
-                int fallDamage = Math.max((int)event.getDistance() - 50, 0);
-                double energyCost = (double)(this.getEnergyPerDamage() * fallDamage);
+                int fallDamage = Math.max((int) event.getDistance() - 50, 0);
+                double energyCost = this.getEnergyPerDamage() * fallDamage;
                 if (energyCost <= ElectricItem.manager.getCharge(armor)) {
                     ElectricItem.manager.discharge(armor, energyCost, Integer.MAX_VALUE, true, false, false);
                     event.setCanceled(true);
@@ -155,16 +154,16 @@ public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack,
         switch (this.armorType) {
             case HEAD:
                 int air = player.getAir();
-                if (ElectricItem.manager.canUse(stack, (double)1000.0F) && air < 100) {
+                if (ElectricItem.manager.canUse(stack, (double) 1000.0F) && air < 100) {
                     player.setAir(air + 200);
-                    ElectricItem.manager.use(stack, (double)1000.0F, (EntityLivingBase)null);
+                    ElectricItem.manager.use(stack, (double) 1000.0F, (EntityLivingBase) null);
                     ret = true;
-                    }
-                if (ElectricItem.manager.canUse(stack, (double)1000.0F) && player.getFoodStats().needFood()) {
+                }
+                if (ElectricItem.manager.canUse(stack, (double) 1000.0F) && player.getFoodStats().needFood()) {
                     int slot = -1;
 
-                    for(int i = 0; i < player.inventory.mainInventory.size(); ++i) {
-                        ItemStack playerStack = (ItemStack)player.inventory.mainInventory.get(i);
+                    for (int i = 0; i < player.inventory.mainInventory.size(); i++) {
+                        ItemStack playerStack = player.inventory.mainInventory.get(i);
                         if (!StackUtil.isEmpty(playerStack) && playerStack.getItem() == ItemName.filled_tin_can.getInstance()) {
                             slot = i;
                             break;
@@ -172,29 +171,29 @@ public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack,
                     }
 
                     if (slot > -1) {
-                        ItemStack playerStack = (ItemStack)player.inventory.mainInventory.get(slot);
-                        ItemTinCan can = (ItemTinCan)playerStack.getItem();
+                        ItemStack playerStack = player.inventory.mainInventory.get(slot);
+                        ItemTinCan can = (ItemTinCan) playerStack.getItem();
                         ActionResult<ItemStack> result = can.onEaten(player, playerStack);
-                        playerStack = (ItemStack)result.getResult();
+                        playerStack = result.getResult();
                         if (StackUtil.isEmpty(playerStack)) {
                             player.inventory.mainInventory.set(slot, StackUtil.emptyStack);
                         }
 
                         if (result.getType() == EnumActionResult.SUCCESS) {
-                            ElectricItem.manager.use(stack, (double)1000.0F, (EntityLivingBase)null);
+                            ElectricItem.manager.use(stack, (double) 1000.0F, (EntityLivingBase) null);
                         }
 
                         ret = true;
                     }
                 }
 
-                for(PotionEffect effect :  new LinkedList<PotionEffect>(player.getActivePotionEffects())) {
+                for (PotionEffect effect : new LinkedList<PotionEffect>(player.getActivePotionEffects())) {
                     Potion potion = effect.getPotion();
-                    Integer cost = (Integer)potionRemovalCost.get(potion);
+                    Integer cost = potionRemovalCost.get(potion);
                     if (cost != null) {
                         cost = cost * (effect.getAmplifier() + 1);
-                        if (ElectricItem.manager.canUse(stack, (double)cost)) {
-                            ElectricItem.manager.use(stack, (double)cost, (EntityLivingBase)null);
+                        if (ElectricItem.manager.canUse(stack, (double) cost)) {
+                            ElectricItem.manager.use(stack, (double) cost, (EntityLivingBase) null);
                             IC2.platform.removePotion(player, potion);
                         }
                     }
@@ -219,7 +218,7 @@ public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack,
                     if (hubmode == HudMode.getMaxMode()) {
                         hubmode = 0;
                     } else {
-                        ++hubmode;
+                        hubmode++;
                     }
 
                     if (IC2.platform.isSimulating()) {
@@ -227,47 +226,45 @@ public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack,
                         IC2.platform.messagePlayer(player, Localization.translate(HudMode.getFromID(hubmode).getTranslationKey()), new Object[0]);
                     }
                 }
-                byte laserMode=0;
+                byte laserMode = 0;
                 laserMode = stack.getTagCompound().getByte("laserMode");
-                if (IC2.keyboard.isAltKeyDown(player) && IC2.keyboard.isSneakKeyDown(player) && toggleTimer==0) {
-                    if (laserMode==3) laserMode=0;
+                if (IC2.keyboard.isAltKeyDown(player) && IC2.keyboard.isSneakKeyDown(player) && toggleTimer == 0) {
+                    if (laserMode == 3) laserMode = 0;
                     else laserMode++;
                     stack.getTagCompound().setByte("laserMode", laserMode);
-                    IC2.platform.messagePlayer(player, "Laser mode: "+laserMode, new Object[0]);
-                } else if(IC2.keyboard.isAltKeyDown(player)) {
+                    IC2.platform.messagePlayer(player, "Laser mode: " + laserMode, new Object[0]);
+                } else if (IC2.keyboard.isAltKeyDown(player)) {
                     if (laserMode == 0) break;
-                    if (ElectricItem.manager.canUse(stack, 10000.0*Math.pow(10,laserMode))) {
+                    if (ElectricItem.manager.canUse(stack, 10000.0 * Math.pow(10, laserMode))) {
                         if (IC2.platform.isSimulating()) {
                             if (beam == null || beam.isDead) {
                                 switch (laserMode) {
                                     case (1):
-                                        beam = new BeamAttack(player.world, player, 128.0D, 50.0F, 8.0F, "ic2plus:textures/entity/proton_beam.png",0);
+                                        beam = new BeamAttack(player.world, player, 128.0D, 50.0F, 8.0F, "ic2plus:textures/entity/proton_beam.png", 0);
                                         break;
                                     case (2):
-                                        beam = new BeamAttack(player.world, player, 128.0D, 300.0F, 16.0F, "ic2plus:textures/entity/antimatter_beam.png",0);
+                                        beam = new BeamAttack(player.world, player, 128.0D, 300.0F, 16.0F, "ic2plus:textures/entity/antimatter_beam.png", 0);
                                         break;
-                                    case(3):
-                                        beam = new BeamAttack(player.world, player, 128.0D, 30.0F, 0.0F, "ic2plus:textures/entity/quark_beam.png",1);
+                                    case (3):
+                                        beam = new BeamAttack(player.world, player, 128.0D, 30.0F, 0.0F, "ic2plus:textures/entity/quark_beam.png", 1);
                                         break;
                                 }
                                 player.world.spawnEntity(beam);
-                            }
-                            else beam.renew();
+                            } else beam.renew();
                         }
-                        ElectricItem.manager.use(stack, 10000.0*Math.pow(10,laserMode), player);
+                        ElectricItem.manager.use(stack, 10000.0 * Math.pow(10, laserMode), player);
                     } else {
                         if (beam != null) {
                             beam.setDead();
                             beam = null;
                         }
                     }
-                }
-                else if (beam != null) {
+                } else if (beam != null) {
                     beam.setDead();
                     beam = null;
                 }
-                if (Nightvision && IC2.platform.isSimulating() && ElectricItem.manager.use(stack, (double)1.0F, player)) {
-                    BlockPos pos = new BlockPos((int)Math.floor(player.posX), (int)Math.floor(player.posY), (int)Math.floor(player.posZ));
+                if (Nightvision && IC2.platform.isSimulating() && ElectricItem.manager.use(stack, (double) 1.0F, player)) {
+                    BlockPos pos = new BlockPos((int) Math.floor(player.posX), (int) Math.floor(player.posY), (int) Math.floor(player.posZ));
                     int skylight = player.getEntityWorld().getLightFromNeighbors(pos);
                     if (skylight > 8) {
                         IC2.platform.removePotion(player, MobEffects.NIGHT_VISION);
@@ -282,17 +279,17 @@ public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack,
                 break;
             case CHEST:
                 player.extinguish();
-                byte fieldPower=0;
+                byte fieldPower = 0;
 
                 fieldPower = stack.getTagCompound().getByte("fieldPower");
-                if (IC2.keyboard.isSneakKeyDown(player) && IC2.keyboard.isModeSwitchKeyDown(player) && toggleTimer == 0){
-                    if (fieldPower==3) fieldPower=0;
+                if (IC2.keyboard.isSneakKeyDown(player) && IC2.keyboard.isModeSwitchKeyDown(player) && toggleTimer == 0) {
+                    if (fieldPower == 3) fieldPower = 0;
                     else fieldPower++;
                     stack.getTagCompound().setByte("fieldPower", fieldPower);
-                    IC2.platform.messagePlayer(player, "Field power: "+fieldPower, new Object[0]);
+                    IC2.platform.messagePlayer(player, "Field power: " + fieldPower, new Object[0]);
                 }
-                if (fieldPower==0) break;
-                double fieldCost=100*Math.pow(10,fieldPower);
+                if (fieldPower == 0) break;
+                double fieldCost = 100 * Math.pow(10, fieldPower);
                 int fieldRadius;
                 AxisAlignedBB field;
                 List<Entity> entitiesWithinAABB;
@@ -330,15 +327,15 @@ public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack,
 
                                 Vec3d dir = entity.getPositionVector().subtract(player.getPositionVector()).normalize();
                                 Double dis = (double) player.getDistance(entity);
-                                Double deflection = 5/(dis*dis);
+                                Double deflection = 5 / (dis * dis);
                                 entity.motionX += dir.x * deflection;
                                 entity.motionY += dir.y * deflection;
                                 entity.motionZ += dir.z * deflection;
-                                destroyEntitiy(entity,world,dis, 50, 10);
+                                destroyEntitiy(entity, world, dis, 50, 10);
                             }
-                            destroyBlocks(world,player,16, 60);
+                            destroyBlocks(world, player, 16, 60);
                             break;
-                        case(3):
+                        case (3):
                             fieldRadius = 50;
                             field = new AxisAlignedBB(
                                     player.posX - fieldRadius, player.posY - fieldRadius, player.posZ - fieldRadius,
@@ -352,13 +349,13 @@ public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack,
 
                                 Vec3d dir = entity.getPositionVector().subtract(player.getPositionVector()).normalize();
                                 Double dis = (double) player.getDistance(entity);
-                                Double deflection = 25/(dis*dis);
+                                Double deflection = 25 / (dis * dis);
                                 entity.motionX += dir.x * deflection;
                                 entity.motionY += dir.y * deflection;
                                 entity.motionZ += dir.z * deflection;
-                                destroyEntitiy(entity,world,dis, 200, 20);
+                                destroyEntitiy(entity, world, dis, 200, 20);
                             }
-                            destroyBlocks(world,player,24, 120);
+                            destroyBlocks(world, player, 24, 120);
                             break;
                     }
                     ElectricItem.manager.use(stack, fieldCost, null);
@@ -373,12 +370,13 @@ public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack,
                     enableQuantumSpeedOnSprint = true;
                 }
 
-                if (ElectricItem.manager.canUse(stack, (double)1000.0F) && (player.onGround || player.isInWater()) && IC2.keyboard.isForwardKeyDown(player) && (enableQuantumSpeedOnSprint && player.isSprinting() || !enableQuantumSpeedOnSprint && IC2.keyboard.isBoostKeyDown(player))) {
+                if (ElectricItem.manager.canUse(stack, (double) 1000.0F) && (player.onGround || player.isInWater()) && IC2.keyboard.isForwardKeyDown(player) && (enableQuantumSpeedOnSprint && player.isSprinting() || !enableQuantumSpeedOnSprint && IC2.keyboard.isBoostKeyDown(player))) {
                     byte speedTicker = nbtData.getByte("speedTicker");
-                    ++speedTicker;
+                    speedTicker++;
+
                     if (speedTicker >= 10) {
                         speedTicker = 0;
-                        ElectricItem.manager.use(stack, (double)1000.0F, (EntityLivingBase)null);
+                        ElectricItem.manager.use(stack, (double) 1000.0F, (EntityLivingBase) null);
                         ret = true;
                     }
 
@@ -387,7 +385,7 @@ public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack,
                     if (player.isInWater()) {
                         speed = 0.1F;
                         if (IC2.keyboard.isJumpKeyDown(player)) {
-                            player.motionY += (double)0.1F;
+                            player.motionY += 0.1F;
                         }
                     }
 
@@ -399,9 +397,9 @@ public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack,
                 break;
             case FEET:
                 if (IC2.platform.isSimulating()) {
-                    boolean wasOnGround = nbtData.hasKey("wasOnGround") ? nbtData.getBoolean("wasOnGround") : true;
+                    boolean wasOnGround = !nbtData.hasKey("wasOnGround") || nbtData.getBoolean("wasOnGround");
                     if (wasOnGround && !player.onGround && IC2.keyboard.isJumpKeyDown(player) && IC2.keyboard.isBoostKeyDown(player)) {
-                        ElectricItem.manager.use(stack, (double)4000.0F, (EntityLivingBase)null);
+                        ElectricItem.manager.use(stack, (double) 4000.0F, (EntityLivingBase) null);
                         ret = true;
                     }
 
@@ -409,19 +407,19 @@ public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack,
                         nbtData.setBoolean("wasOnGround", player.onGround);
                     }
                 } else {
-                    if (ElectricItem.manager.canUse(stack, (double)4000.0F) && player.onGround) {
+                    if (ElectricItem.manager.canUse(stack, (double) 4000.0F) && player.onGround) {
                         this.jumpCharge = 1.0F;
                     }
 
-                    if (player.motionY >= (double)0.0F && this.jumpCharge > 0.0F && !player.isInWater()) {
+                    if (player.motionY >= (double) 0.0F && this.jumpCharge > 0.0F && !player.isInWater()) {
                         if (IC2.keyboard.isJumpKeyDown(player) && IC2.keyboard.isBoostKeyDown(player)) {
                             if (this.jumpCharge == 1.0F) {
-                                player.motionX *= (double)7F;
-                                player.motionZ *= (double)7F;
+                                player.motionX *= 7F;
+                                player.motionZ *= 7F;
                             }
 
-                            player.motionY += (double)(this.jumpCharge * 0.5F);
-                            this.jumpCharge = (float)((double)this.jumpCharge * (double)0.75F);
+                            player.motionY += this.jumpCharge * 0.5F;
+                            this.jumpCharge = (float) ((double) this.jumpCharge * (double) 0.75F);
                         } else if (this.jumpCharge < 1.0F) {
                             this.jumpCharge = 0.0F;
                         }
@@ -432,7 +430,8 @@ public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack,
             player.inventoryContainer.detectAndSendChanges();
         }
     }
-    void destroyBlocks(World world, EntityPlayer player,int size, double power){
+
+    void destroyBlocks(World world, EntityPlayer player, int size, double power) {
         if (world.getTotalWorldTime() % 20 == 0) {
             for (int x = -size; x <= size; x++) {
                 for (int y = -size; y <= size; y++) {
@@ -458,7 +457,7 @@ public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack,
 
                         float resistance = world.getBlockState(pos).getBlock().getExplosionResistance(null);
 
-                        if (power / (distance*distance) > resistance) {
+                        if (power / (distance * distance) > resistance) {
                             world.destroyBlock(pos, true);
                         }
                     }
@@ -467,62 +466,75 @@ public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack,
         }
     }
 
-    void destroyEntitiy(Entity entity, World world, double dis, double damagePower, double r){
-        if (entity instanceof EntityLivingBase && world.getTotalWorldTime()%10==0 && dis<=r){
-            float damage = (float) (damagePower/(dis*dis));
-            entity=(EntityLivingBase) entity;
+    void destroyEntitiy(Entity entity, World world, double dis, double damagePower, double r) {
+        if (entity instanceof EntityLivingBase && world.getTotalWorldTime() % 10 == 0 && dis <= r) {
+            float damage = (float) (damagePower / (dis * dis));
+            entity = entity;
             entity.attackEntityFrom(DamageSource.FLY_INTO_WALL, damage);
         }
     }
 
     @Override
     public boolean addsProtection(EntityLivingBase entity, EntityEquipmentSlot slot, ItemStack stack) {
-        return ElectricItem.manager.getCharge(stack) > (double)0.0F;
+        return ElectricItem.manager.getCharge(stack) > (double) 0.0F;
     }
 
 
+    @Override
+    public boolean drainEnergy(ItemStack pack, int amount) {
+        return ElectricItem.manager.discharge(pack, (double) (amount * 10), Integer.MAX_VALUE, true, false, false) > (double) 0.0F;
+    }
 
     @Override
-    public boolean drainEnergy(ItemStack pack, int amount) {return ElectricItem.manager.discharge(pack, (double)(amount * 10), Integer.MAX_VALUE, true, false, false) > (double)0.0F;}
+    public float getPower(ItemStack stack) {
+        return 3.0F;
+    }
 
     @Override
-    public float getPower(ItemStack stack) {return 3.0F;}
+    public float getDropPercentage(ItemStack stack) {
+        return 0.001F;
+    }
 
     @Override
-    public float getDropPercentage(ItemStack stack) {return 0.001F;}
+    public double getChargeLevel(ItemStack stack) {
+        return ElectricItem.manager.getCharge(stack) / this.getMaxCharge(stack);
+    }
 
     @Override
-    public double getChargeLevel(ItemStack stack) {return ElectricItem.manager.getCharge(stack) / this.getMaxCharge(stack);}
+    public boolean isJetpackActive(ItemStack stack) {
+        return true;
+    }
 
     @Override
-    public boolean isJetpackActive(ItemStack stack) {return true;}
+    public float getHoverMultiplier(ItemStack stack, boolean upwards) {
+        return 0.5F;
+    }
 
     @Override
-    public float getHoverMultiplier(ItemStack stack, boolean upwards) {return 0.5F;}
+    public float getWorldHeightDivisor(ItemStack stack) {
+        return 1.0F;
+    }
 
     @Override
-    public float getWorldHeightDivisor(ItemStack stack) {return 1.0F;}
-
-    @Override
-    public float getBaseThrust(ItemStack stack, boolean hover){
+    public float getBaseThrust(ItemStack stack, boolean hover) {
         return hover ? 1.0F : 0.5F;
     }
 
     @Override
-    public float getBoostThrust(EntityPlayer player, ItemStack stack, boolean hover){
-        return IC2.keyboard.isBoostKeyDown(player) && ElectricItem.manager.getCharge(stack) >= (double)834.0F ? (hover ? 0.1F : 0.5F) : 0.0F;
+    public float getBoostThrust(EntityPlayer player, ItemStack stack, boolean hover) {
+        return IC2.keyboard.isBoostKeyDown(player) && ElectricItem.manager.getCharge(stack) >= (double) 834.0F ? (hover ? 0.1F : 0.5F) : 0.0F;
     }
 
     @Override
-    public boolean useBoostPower(ItemStack stack, float hover){
-        return ElectricItem.manager.discharge(stack, (double)1000.0F, Integer.MAX_VALUE, true, false, false) > (double)0.0F;
+    public boolean useBoostPower(ItemStack stack, float hover) {
+        return ElectricItem.manager.discharge(stack, (double) 1000.0F, Integer.MAX_VALUE, true, false, false) > (double) 0.0F;
     }
 
     @Override
-    public float getHoverBoost(EntityPlayer player, ItemStack stack, boolean boostAmount){
-        if (IC2.keyboard.isBoostKeyDown(player) && ElectricItem.manager.getCharge(stack) >= (double)834.0F) {
+    public float getHoverBoost(EntityPlayer player, ItemStack stack, boolean boostAmount) {
+        if (IC2.keyboard.isBoostKeyDown(player) && ElectricItem.manager.getCharge(stack) >= (double) 834.0F) {
             if (!player.onGround) {
-                ElectricItem.manager.discharge(stack, (double)834.0F, Integer.MAX_VALUE, true, false, false);
+                ElectricItem.manager.discharge(stack, (double) 834.0F, Integer.MAX_VALUE, true, false, false);
             }
 
             return 3.0F;
@@ -532,9 +544,8 @@ public class NeutronStarArmor extends ElectricArmor implements IBoostingJetpack,
     }
 
 
-
     public boolean doesProvideHUD(ItemStack stack) {
-        return this.armorType == EntityEquipmentSlot.HEAD && ElectricItem.manager.getCharge(stack) > (double)0.0F;
+        return this.armorType == EntityEquipmentSlot.HEAD && ElectricItem.manager.getCharge(stack) > (double) 0.0F;
     }
 
     public HudMode getHudMode(ItemStack stack) {
