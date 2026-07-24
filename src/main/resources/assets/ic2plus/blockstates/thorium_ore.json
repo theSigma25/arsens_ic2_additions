@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "normal": { "model": "ic2plus:thorium_ore" }
+  }
+}

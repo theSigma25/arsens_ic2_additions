@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "ic2plus:item/nuclear_component/dual_uranium_233_rod"
+  }
+}

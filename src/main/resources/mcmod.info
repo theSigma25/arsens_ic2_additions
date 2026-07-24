@@ -1,0 +1,16 @@
+[
+{
+  "modid": "ic2plus",
+  "name": "ic2+",
+  "description": "addon for ic2, adds cool stuff",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Arsen"],
+  "credits": "The Forge and FML guys, for making this example",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
